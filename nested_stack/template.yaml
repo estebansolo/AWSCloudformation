@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Nested Stack Example
+
+Resources:
+  MainFunction:
+    Type: AWS::Serverless::Function
+    DependsOn: NestedStack
+    Properties:
+      Runtime: python3.6
+      Handler: app.handler
+      CodeUri: src/lambda_function
+      Description: Example of a lambda function that has a Variable with the Arn of the Nested Function
+      Environment:
+        Variables:
+          NESTED_LAMBDA_FUNCTION : !GetAtt NestedStack.Outputs.NestedFunctionOutput
+
+  NestedStack:
+    Type: AWS::Serverless::Application
+    Properties:
+      TimeoutInMinutes: 120
+      Location: nested_template.yaml
